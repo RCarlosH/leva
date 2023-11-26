@@ -1,41 +1,5 @@
+from displacement import displacement
 import math
-
-
-# height_initial:   H_0
-# height_final:     H_i
-# time_interval:    t_i
-# time_elapsed:     T_i
-
-def displacement(typeof, height_initial, height_final, time_interval, time_elapsed):
-    # Cam Follower Kinematics for Constant Velocity Motion: Rise
-    if typeof == 'Constant':
-        if height_final > 0:
-            pos = height_initial + ((height_final * time_interval) / time_elapsed)
-        else:
-            # Cam Follower Kinematics for Constant Velocity Motion: Fall
-            pos = (height_initial + height_final *
-                (1 - time_interval / time_elapsed))
-
-    elif typeof == 'Cycloidal':
-        # Cam Follower Kinematics for Cycloidal Motion: Rise
-        pos = (height_initial +
-                height_final * ((time_interval / time_elapsed) - (1/math.pi *
-                math.sin * (2 * math.pi * time_interval / time_elapsed))))
-
-        # Cam Follower Kinematics for Cycloidal Motion: Fall
-        pass
-
-    elif typeof == 'Harmonic':
-        # Cam Follower Kinematics for Harmonic Motion: Rise
-        pass
-
-        # Cam Follower Kinematics for Harmonic Motion: Fall
-        pass
-
-    else:
-        raise ValueError
-
-    return pos
 
 # User input ----------------------------------------
 # User input: Lenght of intervals
@@ -100,30 +64,36 @@ total_time = 0
 for m in motions:
     total_time += m['interval']
 
-angular_vel = 2 * math.pi / total_time
+angular_vel = 1 / total_time
 current_height = 0.0
 heights = list()
-count = 0
 for m in motions:
     # Divide interval by calculation intervals
+    h_o = current_height    # Save height before motion calculation
+    h_i = m['displacement'] + current_height
     steps = int(m['interval']/interval_calc)    # how many times to loop
+    count = 0
     for i in range(steps):                      # in current motion
         count += 1
         step = count * interval_calc            # current point in time
+        
         # Apply Formula
-        current_height += displacement(m['typeof'], current_height, m['displacement'], step, m['interval'])
+        current_height = displacement(m['typeof'], h_o, h_i, step, m['interval'])
 
         # Get angular position in radians
-        rads = step * angular_vel
+        rads = step * angular_vel * math.pi
         # Get X and Y points
         x_coord = current_height * math.sin(rads)
         y_coord = current_height * math.cos(rads)
 
         heights.append([step, rads, current_height, x_coord, y_coord])
+        #heights.append([round(step,2), round(rads,4), round(current_height,4), round(x_coord,4), round(y_coord,4)])
 
     # Generate displacement graph
     # Generate cam profile
 
-print('')
-for i in heights:
-    print(i)
+print('\n','Time (s)',' ','Rads',5*' ','Desplazam.',' ','Y',4*' ', 'X')
+for lis in heights:
+    for i in lis:
+        print(' {:<10}'.format(round(i, 3)), end='')
+    print('')
