@@ -70,6 +70,8 @@ heights = list()
 for m in motions:
     # Divide interval by calculation intervals
     h_o = current_height    # Save height before motion calculation
+    if m['displacement'] < 0:
+        h_o -= m['displacement']
     h_i = m['displacement'] + current_height
     steps = int(m['interval']/interval_calc)    # how many times to loop
     count = 0
