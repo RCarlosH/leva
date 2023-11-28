@@ -13,7 +13,7 @@ def displacement(typeof, height_if, height_delta, time_interval, time_elapsed):
             pos = height_if + ((height_delta * time_interval) / time_elapsed)
         else:
             # Cam Follower Kinematics for Constant Velocity Motion: Fall
-            pos = height_if - height_delta * (1 - (time_interval / time_elapsed))
+            pos = height_if - height_delta * (1 - (time_interval/time_elapsed))
 
     elif typeof == 'Cycloidal':
         # Cam Follower Kinematics for Cycloidal Motion: Rise

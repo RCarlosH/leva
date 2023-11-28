@@ -1,5 +1,7 @@
 from displacement import displacement
 import math
+import matplotlib.pyplot as plt
+import numpy as np
 
 # User input ----------------------------------------
 # User input: Lenght of intervals
@@ -61,6 +63,7 @@ for motion in motions:
 
 # Processing --------------------------------------
 total_time = 0
+step_abs = 0
 for m in motions:
     total_time += m['interval']
 
@@ -71,31 +74,54 @@ for m in motions:
     # Divide interval by calculation intervals
     h_o = current_height    # Save height before motion calculation
     if m['displacement'] < 0:
-        h_o -= m['displacement']
-    h_i = m['displacement'] + current_height
+        h_o += m['displacement']
+    h_i = m['displacement'] #+ current_height
     steps = int(m['interval']/interval_calc)    # how many times to loop
     count = 0
     for i in range(steps):                      # in current motion
         count += 1
+        step_abs += 1
+        time_abs = step_abs * interval_calc
         step = count * interval_calc            # current point in time
         
         # Apply Formula
         current_height = displacement(m['typeof'], h_o, h_i, step, m['interval'])
 
         # Get angular position in radians
-        rads = step * angular_vel * math.pi
+        rads = time_abs * angular_vel * 2 * math.pi
         # Get X and Y points
-        x_coord = current_height * math.sin(rads)
-        y_coord = current_height * math.cos(rads)
+        x_coord = current_height * math.cos(rads)
+        y_coord = current_height * math.sin(rads)
 
-        heights.append([step, rads, current_height, x_coord, y_coord])
-        #heights.append([round(step,2), round(rads,4), round(current_height,4), round(x_coord,4), round(y_coord,4)])
+        heights.append([time_abs, rads, current_height, x_coord, y_coord])
 
-    # Generate displacement graph
-    # Generate cam profile
-
-print('\n','Time (s)',' ','Rads',5*' ','Desplazam.',' ','Y',4*' ', 'X')
+# Print results table -----------------------------
+print('\n', 'Time', 3*' ', 'Rads', 3*' ', 'Displac.', 'Y', 6*' ', 'X')
 for lis in heights:
     for i in lis:
-        print(' {:<10}'.format(round(i, 3)), end='')
+        print(' {:<8}'.format(round(i, 3)), end='')
     print('')
+
+# Generate graphs ---------------------------------
+ts = list()
+hs = list()
+xs = list()
+ys = list()
+for height in heights:
+    ts.append(height[0])
+    hs.append(height[2])
+    xs.append(height[3])
+    ys.append(height[4])
+
+times_arr = np.array(ts)
+heights_arr = np.array(hs)
+xs_arr = np.array(xs)
+ys_arr = np.array(ys)
+
+plt.plot(times_arr, heights_arr)
+plt.grid()
+plt.savefig('heights.png')
+plt.clf()
+
+plt.scatter(xs_arr, ys_arr)
+plt.savefig('profile.png')
