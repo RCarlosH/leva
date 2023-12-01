@@ -96,11 +96,20 @@ for m in motions:
         heights.append([time_abs, rads, current_height, x_coord, y_coord])
 
 # Print results table -----------------------------
-print('\n', 'Time', 3*' ', 'Rads', 3*' ', 'Displac.', 'Y', 6*' ', 'X')
+print('\n', 'Time', 3*' ', 'Rads', 3*' ', 'Displac.', 'X', 6*' ', 'Y')
 for lis in heights:
     for i in lis:
         print(' {:<8}'.format(round(i, 3)), end='')
     print('')
+
+# Save to csv file
+with open('leva.csv', 'w') as csv:
+    csv.write('Time, Theta (rads), Displacement, RX, RY\n')
+    for lis in heights:
+        for i in lis:
+            csv.write(str(i) + ',')
+        csv.write('\n')
+
 
 # Generate graphs ---------------------------------
 ts = list()
